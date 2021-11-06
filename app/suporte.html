@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html>
+<head lang="PT">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel='shortcut icon' type='image/x-icon' href='../favicon.ico' />
+    <title>THOTEM</title>
+
+    <link href="../css/metro.css" rel="stylesheet">
+    <link href="../css/metro-icons.css" rel="stylesheet">
+    <link href="../css/metro-responsive.css" rel="stylesheet">
+
+    <script src="../js/jquery-2.1.3.min.js"></script>
+    <script src="../js/metro.js"></script>
+
+    <style>
+        
+        body {   
+         overflow-x: hidden;   
+        }
+        
+        .tile-area-controls {
+            position: fixed;
+            right: 40px;
+            top: 40px;
+        }
+
+        .tile-group {
+            left: 100%px;
+        }
+
+        .tile, .tile-small, .tile-sqaure, .tile-wide, .tile-large, .tile-big, .tile-super {
+            opacity: 0;
+            -webkit-transform: scale(.8);
+            transform: scale(.8);
+        }
+
+        #charmSettings .button {
+            margin: 15px;
+        }
+
+        .schemeButtons {
+            /*width: 300px;*/
+        }
+
+        @media screen and (max-width: 640px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+            .tile-area-controls {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+
+            .tile-area-controls {
+                display: none;
+            }
+
+        }
+        
+            #pop{
+            display: none;
+            position:absolute;
+            top: 25%;
+            left: auto;
+            padding: 10px;
+            width: 300px;
+            height: 200px;
+            border: 1px solid #d0d0d0;
+            }    
+            
+        }
+        
+    </style>
+
+
+    
+    
+    <script>
+        
+        function trocaCor(){
+        var cor = document.getElementById("corum").value;
+        document.getElementById("boxum").style.backgroundColor = cor;
+        }
+        
+    </script>  
+    
+    <script>
+		
+			function relogio(){
+				var data=new Date();
+				var hor=data.getHours();
+				var min=data.getMinutes();
+				var seg=data.getSeconds();
+				
+				if(hor < 10){
+					hor="0"+hor;
+				}
+				if(min < 10){
+					min="0"+min;
+				}
+				if(seg < 10){
+					seg="0"+seg;
+				}
+				
+				var horas=hor + ":" + min + ":" + seg;
+				
+				document.getElementById("rel").value=horas;
+			}
+
+			var timer=setInterval(relogio,1000);
+
+		</script>   
+
+    <script>
+        (function($) {
+            $.StartScreen = function(){
+                var plugin = this;
+                var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+
+                plugin.init = function(){
+                    setTilesAreaSize();
+                    if (width > 640) addMouseWheel();
+                };
+
+                var setTilesAreaSize = function(){
+                    var groups = $(".tile-group");
+                    var tileAreaWidth = 80;
+                    $.each(groups, function(i, t){
+                        if (width <= 640) {
+                            tileAreaWidth = width;
+                        } else {
+                            tileAreaWidth += $(t).outerWidth() + 80;
+                        }
+                    });
+                    $(".tile-area").css({
+                        width: tileAreaWidth
+                    });
+                };
+
+                var addMouseWheel = function (){
+                    $("body").mousewheel(function(event, delta, deltaX, deltaY){
+                        var page = $(document);
+                        var scroll_value = delta * 50;
+                        page.scrollLeft(page.scrollLeft() - scroll_value);
+                        return false;
+                    });
+                };
+
+                plugin.init();
+            }
+        })(jQuery);
+
+        $(function(){
+            $.StartScreen();
+
+            var tiles = $(".tile, .tile-small, .tile-sqaure, .tile-wide, .tile-large, .tile-big, .tile-super");
+
+            $.each(tiles, function(){
+                var tile = $(this);
+                setTimeout(function(){
+                    tile.css({
+                        opacity: 1,
+                        "-webkit-transform": "scale(1)",
+                        "transform": "scale(1)",
+                        "-webkit-transition": ".3s",
+                        "transition": ".3s"
+                    });
+                }, Math.floor(Math.random()*500));
+            });
+
+            $(".tile-group").animate({
+                left: 0
+            });
+        });
+
+        function showCharms(id){
+            var  charm = $(id).data("charm");
+            if (charm.element.data("opened") === true) {
+                charm.close();
+            } else {
+                charm.open();
+            }
+        }
+
+        function setSearchPlace(el){
+            var a = $(el);
+            var text = a.text();
+            var toggle = a.parents('label').children('.dropdown-toggle');
+
+            toggle.text(text);
+        }
+
+        $(function(){
+            var current_tile_area_scheme = localStorage.getItem('tile-area-scheme') || "tile-area-scheme-dark";
+            $(".tile-area").removeClass (function (index, css) {
+                return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
+            }).addClass(current_tile_area_scheme);
+
+            $(".schemeButtons .button").hover(
+                    function(){
+                        var b = $(this);
+                        var scheme = "tile-area-scheme-" +  b.data('scheme');
+                        $(".tile-area").removeClass (function (index, css) {
+                            return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
+                        }).addClass(scheme);
+                    },
+                    function(){
+                        $(".tile-area").removeClass (function (index, css) {
+                            return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
+                        }).addClass(current_tile_area_scheme);
+                    }
+            );
+
+            $(".schemeButtons .button").on("click", function(){
+                var b = $(this);
+                var scheme = "tile-area-scheme-" +  b.data('scheme');
+
+                $(".tile-area").removeClass (function (index, css) {
+                    return (css.match (/(^|\s)tile-area-scheme-\S+/g) || []).join(' ');
+                }).addClass(scheme);
+
+                current_tile_area_scheme = scheme;
+                localStorage.setItem('tile-area-scheme', scheme);
+
+                showSettings();
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+    
+    <section data-role="charm" id="charmTeam"> <!--Menu: Seletor de Equipe-->
+        <h1 class="text-light">Qual seu Squad?</h1>
+        <hr class="thin"/>
+        <br />
+        <section class="input-control text full-size">
+            <label>
+                <article class="dropdown-toggle drop-marker-light">SELECIONE</article>
+                <ul class="d-menu" data-role="dropdown">
+                    <li><a href="#dev.html"  onclick="setSearchPlace(this)">DEV</a></li>
+                    <li><a href="#devops.html" onclick="setSearchPlace(this)">DEVOPS</a></li>
+                    <li><a href="#comercial.html" onclick="setSearchPlace(this)">COMERCIAL</a></li>
+                    <li><a href="#diretoria.html" onclick="setSearchPlace(this)">DIRETORIA</a></li>
+                </ul>
+            </label>
+        </section>
+    </section>
+    
+    <section data-role="charm" id="charmSearch">
+        <h1 class="text-light">Pesquisar</h1>
+        <hr class="thin"/>
+        <br />
+        <section class="input-control text full-size">
+            <!--<input type="text" placeholder=" Digite sua busca">
+            <button class="button"><article class="mif-search"></article></button>-->    
+            <FORM method="GET" action="http://www.google.com.br/custom" target="_blank" >
+                <INPUT type="text" name="q" size="25" maxlength="255" value="" style="width:215px;" placeholder=" Digite sua busca" class="caixa"></INPUT>
+                <button type="submit" value="Pesquisar" class="button estilo mif-search"></button>
+            </FORM>
+        </section>
+    </section>
+
+    <section data-role="charm" id="charmSettings" data-position="top"> <!--Variáveis da Opção de cores do background-->
+        <h1 class="text-light">Cor de fundo</h1>
+        <hr class="thin"/>
+        <br />
+        <section class="schemeButtons">
+            <section class="button square-button tile-area-scheme-white" data-scheme="white"></section>
+        </section>
+    </section>
+
+    <section class="tile-area tile-area-scheme-dark fg-white" style="height: 100%; max-height: 100% !important;">
+        
+        <!--<h1 class="tile-area-title fg-cyan"><img src="../image/totvs.png" width="130" /></h1>-->
+        <!--<h1 class="tile-area-title fg-black"><a href="index.html"><img src="../image/logototemnew.png" /></a></h1>-->
+        
+        <section class="tile-area-title">
+            
+            <button class="square-button bg-darkGray fg-white bg-hover-dark no-border" onclick="showCharms('#charmSettings')"><article class="icon mif-cog" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="2" data-hint="Cor de fundo"></article></button>
+            
+            <button class="square-button bg-gray fg-white bg-hover-dark no-border" onclick="showCharms('#charmSearch')"><article class="icon mif-search" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="2" data-hint="Pesquisar"></article></button>
+            
+            <button class="image-button icon-left bg-transparent fg-black bg-hover-dark no-border"><article class="sub-header no-margin text-light" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="" onclick="showCharms('#charmTeam')">THOTEM&#8291 &#8291 &#8291 &#8291 &#8291 &#8291 &#8291</article></button>    
+            
+        </section>
+        
+        <!--<section class="tile-area-controls">
+            <button class="image-button icon-right bg-transparent fg-black bg-hover-dark no-border" onclick="showCharms('#charmTeam')"><article class="sub-header no-margin text-light" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="" data-hint="Selecione a equipe">PEOPLENET</article><article class="bg-darkCyan fg-white icon mif-user"></article></button>
+            
+            <button class="square-button bg-grayLight fg-white bg-hover-dark no-border"><article class="icon mif-embed2" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="2" data-hint="Develop: Daniel Felix "></article></button>
+            
+            <button class="square-button bg-gray fg-white bg-hover-dark no-border" onclick="showCharms('#charmSearch')"><article class="icon mif-search" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="2" data-hint="Pesquisar"></article></button>
+            
+            <button class="square-button bg-darkOrange fg-white bg-hover-dark no-border" onclick="showCharms('#charmSettings')"><article class="icon mif-cog" data-role="hint" data-hint-background="bg-darkCyan" data-hint-color="fg-white" data-hint-mode="2" data-hint="Cor de fundo"></article></button>
+            
+            <a href="#" class="square-button bg-darkRed fg-white bg-hover-dark no-border"><article class="icon mif-switch"></article></a>
+        </section>-->
+
+        <section class="tile-group triple"> <!--Grupo de links / tile-group em one, double, triple e etc / define o número de colunas-->
+            <article class="tile-group-title fg-grayed" id="ferramentas"></article>
+            
+            <!-- Para adicionar um botão novo, copiar uma section entre tag de link-->
+            <!-- Dentro da tag de link, inserir após o href= o endereço desejeado-->
+            <!-- Dentro da tag de link haverá uma class, alterar o bg- para ma das cores padrões-->
+            <!-- Dentro do article, que está dentro da section, haverá uma class, dentro da class, inserir após mif- o nome do ícone-->
+            <!-- Link para verificar a lista de ícones: https://metroui.org.ua/font.html-->
+            <!-- Dentro do article, fora da section, inserir o nome do botão-->
+            
+            <section class="tile-container">
+
+                <a href="https://peoplenet.movidesk.com" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-bubble"></article>
+                    </section>
+                    <article class="tile-label">Movidesk Agent</article>
+                </a>
+
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-perm-phone-msg"></article>
+                    </section>
+                    <article class="tile-label">Karoo Chat</article>
+                </a>
+                
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-onedrive"></article>
+                    </section>
+                    <article class="tile-label">Drive Corporativo</article>
+                </a>
+                
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-user"></article>
+                    </section>
+                    <article class="tile-label">Zendesk</article>
+                </a>
+
+                <a href="https://www.4devs.com.br/" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-command"></article>
+                    </section>
+                    <article class="tile-label">4Devs</article>
+                </a>
+
+                <a href="https://web.whatsapp.com/" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-stack"></article>
+                    </section>
+                    <article class="tile-label">Whatsapp Web</article>
+                </a>
+
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-paragraph-justify"></article>
+                    </section>
+                    <article class="tile-label">Bimer</article>
+                </a>
+
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-paragraph-center"></article>
+                    </section>
+                    <article class="tile-label">ISL</article>
+                </a>
+                
+                <a href="#" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-anchor"></article>
+                    </section>
+                    <article class="tile-label">CLIENTES ATENDIMENTO</article>
+                </a>
+                
+                <a href="https://www.gov.br/esocial/pt-br/acesso-ao-sistema/semaforo" class="tile bg-dark fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-traff"></article>
+                    </section>
+                    <article class="tile-label">SEMÁFORO eSocial</article>
+                </a>
+                
+            </section>
+				
+        </section>
+
+        <section class="tile-group double"> <!--Grupo de links / tile-group em one, double, triple e etc / define o número de colunas-->
+            <article class="tile-group-title fg-grayed" id="flow"></article>
+            <section class="tile-container">
+                
+                <a href="#" class="tile bg-darkCyan fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-organization"></article>
+                    </section>
+                    <article class="tile-label">Sala de Reunião</article>
+                </a>
+                
+                <a href="#" class="tile bg-darkCyan fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-tree"></article>
+                    </section>
+                    <article class="tile-label">Pipefy</article>
+                </a>
+				
+				<a href="#" class="tile bg-darkCyan fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-mail"></article>
+                    </section>
+                    <article class="tile-label">E-mail Corporativo</article>
+                </a>
+
+                <a href="#" class="tile bg-darkCyan fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-mail-read"></article>
+                    </section>
+                    <article class="tile-label">E-mail Alterdata</article>
+                </a>
+                
+                <a href="#" class="tile bg-darkCyan fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-paragraph-right"></article>
+                    </section>
+                    <article class="tile-label">FAQ Peoplenet</article>
+                </a> 
+
+            </section>
+        </section>
+
+        <section class="tile-group double"> <!--Grupo de links / tile-group em one, double, triple e etc / define o número de colunas-->
+            <article class="tile-group-title fg-grayed" id="sistemas"></article>
+            <section class="tile-container">
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-embed2"></article>
+                    </section>
+                    <section class="tile-label">HOMOLOG</section>
+                </a>
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-medkit"></article>
+                    </section>
+                    <article class="tile-label">SST</article>
+                </a>
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-pilcrow"></article>
+                    </section>
+                    <section class="tile-label">RH</section>
+                </a>
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-user-check"></article>
+                    </section>
+                    <article class="tile-label">CENTRAL DO CLIENTE</article>
+                </a>
+
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-user-plus"></article>
+                    </section>
+                    <article class="tile-label">Meu RH</article>
+                </a>
+
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-security"></article>
+                    </section>
+                    <article class="tile-label">SRV AVISOS</article>
+                </a>
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-tab"></article>
+                    </section>
+                    <section class="tile-label">API</section>
+                </a>
+                
+                <a href="#" class="tile bg-gray fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-delicious"></article>
+                    </section>
+                    <article class="tile-label">DASHBOARD API</article>
+                </a>
+                
+            </section>
+        </section>
+
+        <section class="tile-group one"> <!--Grupo de links / tile-group em one, double, triple e etc / define o número de colunas-->
+            <article class="tile-group-title fg-grayed" id="utilizadades"></article>
+            <section class="tile-container">
+                
+                <a href="https://www.meualelo.com.br/" class="tile bg-darkOrange fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-credit-card"></article>
+                    </section>
+                    <article class="tile-label">Alelo</article>
+                </a>
+        
+                <a href="https://minhaconta.riocardmais.com.br" class="tile bg-darkOrange fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-bus"></article>
+                    </section>
+                    <article class="tile-label">Rio Card</article>
+                </a>
+                
+                <a href="https://www.gov.br/esocial/pt-br/documentacao-tecnica" class="tile bg-darkOrange fg-white" target="_blank">
+                    <section class="tile-content iconic">
+                        <article class="icon mif-clipboard"></article>
+                    </section>
+                    <article class="tile-label">Doc & Layout eSocial</article>
+                </a>
+                
+            </section>
+        </section>
+    </section>
+</body>
+
+</html>

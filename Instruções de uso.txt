@@ -1,0 +1,27 @@
+INSTRUÇÕES THOTEM
+
+<section class="tile-group one"> --- Section onde está definido o número de colunas da aba, sendo 'One' (Double, Triple, Four)
+            <article class="tile-group-title fg-grayed">Ferramentas</article> --- Não precisa alterar
+
+            <section class="tile-container"> --- Não precisa alterar
+       
+                <a href="endereço do link" class="tile bg-darkCyan fg-white" target="_blank"> --- Não alterar
+                    <section class="tile-content iconic">
+                        <article class="icon mif-skype"></article> --- Dentro do article, após mif- colocar o nome em inglês do ícone escolhido (Pode ser visto no botão ´Ícones Totem´)
+                    </section>
+                    <article class="tile-label">nome do botão</article>
+                </a>
+        
+ 
+            </section>
+ </section>
+
+Esqueleto para novos botões
+
+<a href="endereço do link" class="tile bg-darkCyan fg-white" target="_blank">
+   <article class="icon mif-skype"></article> 
+	<section class="tile-content iconic">
+          <article class="icon mif-nomeÍcone"></article>
+        </section>
+   <article class="tile-label">nome do botão</article>
+</a>
